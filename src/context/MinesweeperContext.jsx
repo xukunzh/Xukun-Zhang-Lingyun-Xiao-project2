@@ -17,6 +17,7 @@ export function MinesweeperProvider({ children }) {
   const [flagCount, setFlagCount] = useState(0);
   const [isFirstClick, setIsFirstClick] = useState(true);
   const [localStorageData, setLocalStorageData] = useState(null); // json
+  const [correctFlagsOnMines, setCorrectFlagsOnMines] = useState(0);
 
   // Difficulty settings for different levels (easy, medium, hard)
   const difficultySettings = useMemo(
@@ -27,6 +28,22 @@ export function MinesweeperProvider({ children }) {
     }),
     []
   );
+
+  // helper method
+  const updateCorrectCountOfFlagsOnMines = useCallback(() => {
+    let totalCorrectCnt = 0;
+    for (const key in boardState) {
+      const cellState = boardState[key];
+      if (cellState.isMine && cellState.isFlagged && !cellState.isRevealed) {
+        totalCorrectCnt++;
+      }
+    }
+    setCorrectFlagsOnMines(totalCorrectCnt);
+  }, [boardState]);
+
+  useEffect(() => {
+    updateCorrectCountOfFlagsOnMines();
+  }, [boardState, updateCorrectCountOfFlagsOnMines]);
 
   // Initialize the board with empty cells and randomly placed mines
   const initializeBoard = useCallback(
@@ -82,6 +99,7 @@ export function MinesweeperProvider({ children }) {
       setGameOver(false);
       setIsWin(false);
       setFlagCount(0);
+      setCorrectFlagsOnMines(0);
     },
     [difficultySettings]
   );
@@ -128,7 +146,7 @@ export function MinesweeperProvider({ children }) {
       console.log("There is no previous data!");
       initializeBoard(difficulty);
     }
-  }, []);
+  }, [difficulty, initializeBoard]);
 
   // Toggles the flag on a cell
   const toggleFlag = useCallback(
@@ -323,6 +341,7 @@ export function MinesweeperProvider({ children }) {
     loadPreviousGameData,
     clearGameHistory,
     localStorageData,
+    correctFlagsOnMines,
   };
 
   return (
