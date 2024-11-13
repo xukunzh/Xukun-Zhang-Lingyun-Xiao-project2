@@ -8,7 +8,6 @@ import {
 
 export const MinesweeperContext = createContext();
 
-// Provides Minesweeper game state and functions to manipulate game data
 export function MinesweeperProvider({ children }) {
   const [boardState, setBoardState] = useState({});
   const [gameOver, setGameOver] = useState(false);
@@ -16,10 +15,9 @@ export function MinesweeperProvider({ children }) {
   const [difficulty, setDifficulty] = useState("easy");
   const [flagCount, setFlagCount] = useState(0);
   const [isFirstClick, setIsFirstClick] = useState(true);
-  const [localStorageData, setLocalStorageData] = useState(null); // json
+  const [localStorageData, setLocalStorageData] = useState(null);
   const [correctFlagsOnMines, setCorrectFlagsOnMines] = useState(0);
 
-  // Difficulty settings for different levels (easy, medium, hard)
   const difficultySettings = useMemo(
     () => ({
       easy: { rows: 8, cols: 8, mines: 10 },
@@ -29,29 +27,12 @@ export function MinesweeperProvider({ children }) {
     []
   );
 
-  // helper method
-  const updateCorrectCountOfFlagsOnMines = useCallback(() => {
-    let totalCorrectCnt = 0;
-    for (const key in boardState) {
-      const cellState = boardState[key];
-      if (cellState.isMine && cellState.isFlagged && !cellState.isRevealed) {
-        totalCorrectCnt++;
-      }
-    }
-    setCorrectFlagsOnMines(totalCorrectCnt);
-  }, [boardState]);
-
-  useEffect(() => {
-    updateCorrectCountOfFlagsOnMines();
-  }, [boardState, updateCorrectCountOfFlagsOnMines]);
-
   // Initialize the board with empty cells and randomly placed mines
   const initializeBoard = useCallback(
     (difficulty) => {
       const { rows, cols, mines } = difficultySettings[difficulty];
       const board = {};
 
-      // Initialize all cells
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           board[`${i}-${j}`] = {
@@ -63,7 +44,6 @@ export function MinesweeperProvider({ children }) {
         }
       }
 
-      // Randomly place mines and update adjacent mine counts
       let minesPlaced = 0;
       while (minesPlaced < mines) {
         const row = Math.floor(Math.random() * rows);
@@ -134,7 +114,6 @@ export function MinesweeperProvider({ children }) {
         flagCount,
         isFirstClick,
       } = JSON.parse(savedData);
-      // update to all context
       setBoardState(boardState);
       setGameOver(gameOver);
       setIsWin(isWin);
@@ -143,12 +122,11 @@ export function MinesweeperProvider({ children }) {
       setIsFirstClick(isFirstClick);
       console.log("Loaded!");
     } else {
-      console.log("There is no previous data!");
+      console.log("There is no historical data!");
       initializeBoard(difficulty);
     }
   }, [difficulty, initializeBoard]);
 
-  // Toggles the flag on a cell
   const toggleFlag = useCallback(
     (row, col) => {
       if (gameOver) return;
@@ -167,14 +145,12 @@ export function MinesweeperProvider({ children }) {
     [boardState, gameOver]
   );
 
-  // Initialize the board when difficulty changes
   useEffect(() => {
     console.log("Initial board setup");
     initializeBoard(difficulty);
   }, [difficulty, initializeBoard]);
 
-  // Checks if the player has won the game
-  const checkWinCondition = useCallback(() => {
+  const checkWin = useCallback(() => {
     if (!boardState) return;
 
     const { rows, cols, mines } = difficultySettings[difficulty];
@@ -201,15 +177,12 @@ export function MinesweeperProvider({ children }) {
       const cell = boardState[key];
 
       if (!cell || cell.isRevealed || cell.isFlagged) return;
-
-      // Special handling for first click to avoid immediate mine hit
       if (isFirstClick) {
         setIsFirstClick(false);
+
         if (cell.isMine) {
           const { rows, cols, mines } = difficultySettings[difficulty];
           const newBoard = {};
-
-          // Initialize cells and place mines avoiding the first-clicked cell
           for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
               newBoard[`${i}-${j}`] = {
@@ -221,7 +194,6 @@ export function MinesweeperProvider({ children }) {
             }
           }
 
-          // Place mines avoiding the first cell
           let minesPlaced = 0;
           while (minesPlaced < mines) {
             const mineRow = Math.floor(Math.random() * rows);
@@ -302,7 +274,7 @@ export function MinesweeperProvider({ children }) {
         }
       }
       setBoardState(newBoardState);
-      checkWinCondition();
+      checkWin();
     },
     [
       boardState,
@@ -310,11 +282,25 @@ export function MinesweeperProvider({ children }) {
       isFirstClick,
       difficulty,
       difficultySettings,
-      checkWinCondition,
+      checkWin,
     ]
   );
 
-  // Resets game to start a new one
+  const updateCorrectCountOfFlagsOnMines = useCallback(() => {
+    let totalCorrectCnt = 0;
+    for (const key in boardState) {
+      const cellState = boardState[key];
+      if (cellState.isMine && cellState.isFlagged && !cellState.isRevealed) {
+        totalCorrectCnt++;
+      }
+    }
+    setCorrectFlagsOnMines(totalCorrectCnt);
+  }, [boardState]);
+
+  useEffect(() => {
+    updateCorrectCountOfFlagsOnMines();
+  }, [boardState, updateCorrectCountOfFlagsOnMines]);
+
   const resetGame = useCallback(() => {
     setIsFirstClick(true);
     initializeBoard(difficulty);
@@ -332,16 +318,16 @@ export function MinesweeperProvider({ children }) {
     isWin,
     difficulty,
     flagCount,
+    localStorageData,
+    correctFlagsOnMines,
+    difficultySettings,
     setDifficulty,
     revealCell,
     resetGame,
-    difficultySettings,
     toggleFlag,
     saveGameData,
     loadPreviousGameData,
     clearGameHistory,
-    localStorageData,
-    correctFlagsOnMines,
   };
 
   return (

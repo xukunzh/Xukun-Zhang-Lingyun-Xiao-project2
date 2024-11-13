@@ -14,8 +14,6 @@ export function Board() {
   } = useContext(MinesweeperContext);
   const { rows, cols, mines } = difficultySettings[difficulty];
 
-  console.log("Board State:", boardState);
-
   if (!boardState || Object.keys(boardState).length === 0) {
     return <div>Loading...</div>;
   }
