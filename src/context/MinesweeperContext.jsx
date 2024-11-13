@@ -96,7 +96,11 @@ export function MinesweeperProvider({ children }) {
       flagCount,
       isFirstClick,
     };
-    localStorage.setItem("minesweeperGame", JSON.stringify(gameData));
+
+    const jsonData = JSON.stringify(gameData);
+    localStorage.setItem("minesweeperGame", jsonData);
+    setLocalStorageData(jsonData);
+
     console.log("data saved!");
   }, [boardState, gameOver, isWin, difficulty, flagCount, isFirstClick]);
 
@@ -300,12 +304,8 @@ export function MinesweeperProvider({ children }) {
 
   const clearGameHistory = useCallback(() => {
     localStorage.removeItem("minesweeperGame");
+    setLocalStorageData(null);
   }, []);
-
-  const getLocalStorageData = () => {
-    const savedData = localStorage.getItem("minesweeperGame");
-    return savedData ? JSON.parse(savedData) : null;
-  };
 
   // Provides game data and functions to the context
   const value = {
@@ -322,7 +322,7 @@ export function MinesweeperProvider({ children }) {
     saveGameData,
     loadPreviousGameData,
     clearGameHistory,
-    getLocalStorageData,
+    localStorageData,
   };
 
   return (

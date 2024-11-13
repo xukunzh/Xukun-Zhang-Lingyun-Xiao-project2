@@ -10,7 +10,7 @@ export function GamePage() {
     saveGameData,
     loadPreviousGameData,
     clearGameHistory,
-    getLocalStorageData,
+    localStorageData,
   } = useContext(MinesweeperContext);
 
   useEffect(() => {
@@ -30,15 +30,16 @@ export function GamePage() {
       </h1>
       <Board />
       <button onClick={saveGameData}>Save Your Data</button>
-      <button onClick={loadPreviousGameData}>Load your previous data</button>
-      <button onClick={clearGameHistory}>Clear game history</button>
-      {/* {(() => {
-        getLocalStorageData();
-      }) ? (
-        <span>retrieve success!</span>
-      ) : (
-        <span>No history data in local storage!</span>
-      )} */}
+      {localStorageData ? (
+        <div>
+          <button onClick={loadPreviousGameData}>
+            Load your previous data
+          </button>
+        </div>
+      ) : null}
+      {localStorageData ? (
+        <button onClick={clearGameHistory}>Clear game history</button>
+      ) : null}
     </div>
   );
 }
