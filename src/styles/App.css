@@ -20,9 +20,17 @@
   gap: 20px;
 }
 
+.game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 10px;
+}
+
 .game-header {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -85,14 +93,30 @@
   color: #1976d2;
 }
 
-.cell.number[data-mines="1"] { color: #2196F3; }
-.cell.number[data-mines="2"] { color: #4CAF50; }
-.cell.number[data-mines="3"] { color: #F44336; }
-.cell.number[data-mines="4"] { color: #673AB7; }
-.cell.number[data-mines="5"] { color: #795548; }
-.cell.number[data-mines="6"] { color: #009688; }
-.cell.number[data-mines="7"] { color: #000000; }
-.cell.number[data-mines="8"] { color: #757575; }
+.cell.number[data-mines="1"] {
+  color: #2196f3;
+}
+.cell.number[data-mines="2"] {
+  color: #4caf50;
+}
+.cell.number[data-mines="3"] {
+  color: #f44336;
+}
+.cell.number[data-mines="4"] {
+  color: #673ab7;
+}
+.cell.number[data-mines="5"] {
+  color: #795548;
+}
+.cell.number[data-mines="6"] {
+  color: #009688;
+}
+.cell.number[data-mines="7"] {
+  color: #000000;
+}
+.cell.number[data-mines="8"] {
+  color: #757575;
+}
 
 .mine-counter {
   padding: 8px 16px;
@@ -104,7 +128,6 @@
   text-align: center;
 }
 
-/* 游戏头部信息 */
 .game-header {
   display: flex;
   gap: 20px;
@@ -113,7 +136,7 @@
   background-color: #fff;
   border-radius: 4px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .game-status {
