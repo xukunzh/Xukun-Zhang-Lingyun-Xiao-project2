@@ -33,7 +33,7 @@ export function GamePage() {
       {localStorageData ? (
         <div>
           <button onClick={loadPreviousGameData}>
-            Load your previous data
+            Load Your Previous Game
           </button>
         </div>
       ) : null}
