@@ -35,16 +35,159 @@ If we could improve it, we’d probably want more bonus challenges to make thing
 
 ##### ===============================================================================
 
-## Available scripts to run the app and build locally
+## Extra credit code
 
-In the project directory, you can run:
+1. **Early submissions**: 3pts - the project finished on Nov 12
+2. **Safe first Turn**: 2pts
+   `isFirstClick` to check whether the specific click is the first click
+   MinesweeperContext.jsx line180 - 234
 
-### `npm start`
+   ```
+   if (cell.isMine) {
+          const { rows, cols, mines } = difficultySettings[difficulty];
+          const newBoard = {};
+          for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+              newBoard[`${i}-${j}`] = {
+                isMine: false,
+                isRevealed: false,
+                isFlagged: false,
+                adjacentMines: 0,
+              };
+            }
+          }
+        ...
+          newBoard[key].isRevealed = true;
+          setBoardState(newBoard);
+          return;
+        }
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+   ```
 
-### `npm run build`
+3. **Saved Data** - 4pts
+   Implement a button called “Save your data.” When the button is clicked, the historical game data will be stored in local storage. If a JSON record called ‘minesweeperGame’ exists in local storage, two new buttons will appear: “Load your previous game” and “Clear game history.”
 
-Builds the app for production to the `dist` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   - First, the user can click “Reset game” to simulate exiting the game. Then, by clicking “Load your previous game,” the historical data will be loaded onto the new board.
+   - If the user clicks “Clear game history,” the historical data will be removed from local storage.
+
+```
+const [localStorageData, setLocalStorageData] = useState(null); // json
+...
+const saveGameData = useCallback(() => {
+    // retrieve current game data
+    const gameData = {
+      boardState,
+      gameOver,
+      isWin,
+      difficulty,
+      flagCount,
+      isFirstClick,
+    };
+
+    const jsonData = JSON.stringify(gameData);
+    localStorage.setItem("minesweeperGame", jsonData);
+    setLocalStorageData(jsonData);
+
+    console.log("data saved!");
+  }, [boardState, gameOver, isWin, difficulty, flagCount, isFirstClick]);
+...
+  const loadPreviousGameData = useCallback(() => {
+    // retrieve saved data from local storage
+    const savedData = localStorage.getItem("minesweeperGame");
+    if (savedData) {
+      const {
+        boardState,
+        gameOver,
+        isWin,
+        difficulty,
+        flagCount,
+        isFirstClick,
+      } = JSON.parse(savedData);
+      setBoardState(boardState);
+      setGameOver(gameOver);
+      setIsWin(isWin);
+      setDifficulty(difficulty);
+      setFlagCount(flagCount);
+      setIsFirstClick(isFirstClick);
+      console.log("Loaded!");
+    } else {
+      console.log("There is no historical data!");
+      initializeBoard(difficulty);
+    }
+  }, [difficulty, initializeBoard]);
+...
+    const clearGameHistory = useCallback(() => {
+    localStorage.removeItem("minesweeperGame");
+    setLocalStorageData(null);
+  }, []);
+
+```
+
+GamePage.jsx
+
+```
+<button onClick={saveGameData}>Save Your Data</button>
+      {localStorageData ? (
+        <div>
+          <button onClick={loadPreviousGameData}>
+            Load Your Previous Game
+          </button>
+        </div>
+      ) : null}
+      {localStorageData ? (
+        <button onClick={clearGameHistory}>Clear game history</button>
+      ) : null}
+```
+
+4. **Flag Bomb Function - 3pts**
+   Cell.jsx
+
+   ```
+   const handleRightClick = (e) => {
+       e.preventDefault();
+       if (!gameOver) {
+       toggleFlag(row, col);
+       }
+   };
+   ```
+
+5. **Auto Clear - 5pts**
+   MinesweeperContext.jsx line250 - 274
+   Recursively reveal surroundings.
+
+```
+const revealSurrounding = (r, c) => {
+            for (let i = -1; i <= 1; i++) {
+              for (let j = -1; j <= 1; j++) {
+                const newRow = r + i;
+                const newCol = c + j;
+                const newKey = `${newRow}-${newCol}`;
+
+                if (
+                  newRow >= 0 &&
+                  newRow < rows &&
+                  newCol >= 0 &&
+                  newCol < cols &&
+                  !newBoardState[newKey].isRevealed &&
+                  !newBoardState[newKey].isFlagged
+                ) {
+                  newBoardState[newKey].isRevealed = true;
+                  if (newBoardState[newKey].adjacentMines === 0) {
+                    revealSurrounding(newRow, newCol);
+                  }
+                }
+              }
+            }
+          };
+          revealSurrounding(row, col);
+
+```
+
+##### ===============================================================================
+
+##### Available scripts to run the app and build locally
+
+1. In the project directory, you can run: `npm start`. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+2. `npm run build` Builds the app for production to the `dist` folder.\
+   It correctly bundles React in production mode and optimizes the build for the best performance.
