@@ -1,9 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MinesweeperProvider } from './context/MinesweeperContext';
-import { HomePage } from './components/HomePage';
-import { GamePage } from './components/GamePage';
-import { RulesPage } from './components/RulesPage';
-import { Navigation } from './components/Navigation';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MinesweeperProvider } from "./context/MinesweeperContext";
+import { HomePage } from "./components/HomePage";
+import { GamePage } from "./components/GamePage";
+import { RulesPage } from "./components/RulesPage";
+import { Navigation } from "./components/Navigation";
 
 function App() {
   return (

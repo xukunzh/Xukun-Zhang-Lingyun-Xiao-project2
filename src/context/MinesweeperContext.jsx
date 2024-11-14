@@ -179,7 +179,7 @@ export function MinesweeperProvider({ children }) {
       if (!cell || cell.isRevealed || cell.isFlagged) return;
       if (isFirstClick) {
         setIsFirstClick(false);
-
+        // If the first click is mine, reset the board
         if (cell.isMine) {
           const { rows, cols, mines } = difficultySettings[difficulty];
           const newBoard = {};
